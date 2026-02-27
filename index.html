@@ -167,16 +167,14 @@ let html="<thead class='table-dark'><tr><th>Nombre</th><th>Tipo</th><th>Fecha</t
 
 data.data.slice(1).forEach(r=>{
 
-let fechaFormateada = r[4]; // ya viene lista
-let horaFormateada  = r[5]; // ya viene lista
-
 html+=`<tr>
 <td>${r[2]}</td>
 <td>${r[3]}</td>
-<td>${fechaFormateada}</td>
-<td>${horaFormateada}</td>
+<td>${r[4]}</td>
+<td>${r[5]}</td>
 <td><button class="btn btn-sm btn-primary" onclick="verMapa(${r[6]},${r[7]})">Ver</button></td>
 </tr>`;
+
 });
 
 html+="</tbody>";
