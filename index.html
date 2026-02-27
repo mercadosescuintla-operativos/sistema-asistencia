@@ -163,11 +163,16 @@ body:JSON.stringify({action:"obtenerRegistros"})
 let html="<tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Mapa</th></tr>";
 
 data.data.slice(1).forEach(r=>{
+
+let fecha = new Date(r[4]);
+let fechaFormateada = fecha.toLocaleDateString();
+let horaFormateada = fecha.toLocaleTimeString();
+
 html+=`<tr>
 <td>${r[2]}</td>
 <td>${r[3]}</td>
-<td>${r[4]}</td>
-<td>${r[5]}</td>
+<td>${fechaFormateada}</td>
+<td>${horaFormateada}</td>
 <td><button onclick="verMapa(${r[6]},${r[7]})">Ver</button></td>
 </tr>`;
 });
