@@ -164,9 +164,20 @@ let html="<tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Mapa</t
 
 data.data.slice(1).forEach(r=>{
 
-let fecha = new Date(r[4]);
-let fechaFormateada = fecha.toLocaleDateString();
-let horaFormateada = fecha.toLocaleTimeString();
+// r[4] = "2026-02-27T06:00:00.000Z"
+// r[5] = "1899-12-30T18:49:13.000Z"
+
+let fechaISO = r[4];
+let horaISO = r[5];
+
+// Extraer fecha
+let fechaParte = fechaISO.split("T")[0]; // 2026-02-27
+let partesFecha = fechaParte.split("-");
+let fechaFormateada = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
+
+// Extraer hora
+let horaParte = horaISO.split("T")[1]; // 18:49:13.000Z
+let horaFormateada = horaParte.substring(0,8); // 18:49:13
 
 html+=`<tr>
 <td>${r[2]}</td>
@@ -176,11 +187,6 @@ html+=`<tr>
 <td><button onclick="verMapa(${r[6]},${r[7]})">Ver</button></td>
 </tr>`;
 });
-
-tabla.innerHTML=html;
-});
-}
-
 function verMapa(lat,lng){
 if(!mapa){
 mapa=L.map('map').setView([lat,lng],15);
