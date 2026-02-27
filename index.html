@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sistema Asistencia</title>
+<script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"></script>
+<style>
+body{
+  font-family:Arial;
+  background:#f4f6f9;
+  text-align:center;
+}
+.container{
+  background:white;
+  padding:30px;
+  margin:30px auto;
+  width:350px;
+  border-radius:10px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+input, select, button{
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+}
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+button:hover{background:#1d4ed8;}
+#map{height:300px;margin-top:20px;}
+table{width:100%;margin-top:20px;border-collapse:collapse;}
+td,th{border:1px solid #ccc;padding:5px;}
+</style>
+</head>
+<body>
+
+<div class="container" id="loginDiv">
+<h2>Login</h2>
+<input id="correo" placeholder="Correo">
+<input id="password" type="password" placeholder="Contraseña">
+<button onclick="login()">Ingresar</button>
+</div>
+
+<div class="container" id="panelDiv" style="display:none;">
+<h2 id="bienvenida"></h2>
+<select id="tipoMarcaje">
+<option>Entrada</option>
+<option>Inicio Almuerzo</option>
+<option>Fin Almuerzo</option>
+<option>Salida</option>
+</select>
+<button onclick="marcar()">Registrar</button>
+<button onclick="cerrarSesion()">Cerrar Sesión</button>
+</div>
+
+<div class="container" id="adminDiv" style="display:none;">
+<h2>Panel Administrador</h2>
+<button onclick="cargarRegistros()">Ver Registros</button>
+<h3>Crear Usuario</h3>
+<input id="nuevoNombre" placeholder="Nombre">
+<input id="nuevoCorreo" placeholder="Correo">
+<input id="nuevoPassword" placeholder="Password">
+<select id="nuevoRol">
+<option>Registrador</option>
+<option>Administrador</option>
+</select>
+<button onclick="crearUsuario()">Crear</button>
+
+<table id="tabla"></table>
+<div id="map"></div>
+</div>
+
+<script>
+const API="PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+
+let usuarioActual=null;
+let mapa;
+let marker;
+
+function login(){
+fetch(API,{
+method:"POST",
+body:JSON.stringify({
+action:"login",
+correo:correo.value,
+password:password.value
+})
+})
+.then(r=>r.json())
+.then(data=>{
+if(data.success){
+usuarioActual=data.usuario;
+loginDiv.style.display="none";
+if(usuarioActual.rol==="Administrador"){
+adminDiv.style.display="block";
+}else{
+panelDiv.style.display="block";
+bienvenida.innerText="Bienvenido "+usuarioActual.nombre;
+}
+}else alert("Credenciales incorrectas");
+});
+}
+
+function marcar(){
+navigator.geolocation.getCurrentPosition(pos=>{
+fetch(API,{
+method:"POST",
+body:JSON.stringify({
+action:"marcar",
+usuario_id:usuarioActual.id,
+nombre:usuarioActual.nombre,
+tipo:tipoMarcaje.value,
+latitud:pos.coords.latitude,
+longitud:pos.coords.longitude
+})
+})
+.then(r=>r.json())
+.then(()=>alert("Marcaje registrado"));
+});
+}
+
+function cargarRegistros(){
+fetch(API,{
+method:"POST",
+body:JSON.stringify({action:"obtenerRegistros"})
+})
+.then(r=>r.json())
+.then(data=>{
+let html="<tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Ver</th></tr>";
+data.data.slice(1).forEach(r=>{
+html+=`<tr>
+<td>${r[2]}</td>
+<td>${r[3]}</td>
+<td>${r[4]}</td>
+<td>${r[5]}</td>
+<td><button onclick="verMapa(${r[6]},${r[7]})">Mapa</button></td>
+</tr>`;
+});
+tabla.innerHTML=html;
+});
+}
+
+function verMapa(lat,lng){
+if(!mapa){
+mapa=new google.maps.Map(document.getElementById("map"),{
+zoom:15,
+center:{lat:lat,lng:lng}
+});
+marker=new google.maps.Marker({position:{lat:lat,lng:lng},map:mapa});
+}else{
+mapa.setCenter({lat:lat,lng:lng});
+marker.setPosition({lat:lat,lng:lng});
+}
+}
+
+function crearUsuario(){
+fetch(API,{
+method:"POST",
+body:JSON.stringify({
+action:"crearUsuario",
+nombre:nuevoNombre.value,
+correo:nuevoCorreo.value,
+password:nuevoPassword.value,
+rol:nuevoRol.value
+})
+})
+.then(r=>r.json())
+.then(()=>alert("Usuario creado"));
+}
+
+function cerrarSesion(){
+location.reload();
+}
+</script>
+
+</body>
+</html>
