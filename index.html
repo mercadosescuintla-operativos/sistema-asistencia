@@ -154,12 +154,12 @@ password:password.value
 .then(data=>{
 if(data.success){
 usuarioActual=data.usuario;
-loginDiv.style.display="none";
+document.getElementById("loginDiv").style.display="none";
 
 if(usuarioActual.rol==="Administrador"){
-adminDiv.style.display="block";
+document.getElementById("adminDiv").style.display="block";
 }else{
-panelDiv.style.display="block";
+document.getElementById("panelDiv").style.display="block";
 bienvenida.innerText="Bienvenido "+usuarioActual.nombre;
 }
 }else{
@@ -197,20 +197,15 @@ let html="<tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Mapa</t
 
 data.data.slice(1).forEach(r=>{
 
-// r[4] = "2026-02-27T06:00:00.000Z"
-// r[5] = "1899-12-30T18:49:13.000Z"
-
 let fechaISO = r[4];
 let horaISO = r[5];
 
-// Extraer fecha
-let fechaParte = fechaISO.split("T")[0]; // 2026-02-27
+let fechaParte = fechaISO.split("T")[0];
 let partesFecha = fechaParte.split("-");
 let fechaFormateada = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
 
-// Extraer hora
-let horaParte = horaISO.split("T")[1]; // 18:49:13.000Z
-let horaFormateada = horaParte.substring(0,8); // 18:49:13
+let horaParte = horaISO.split("T")[1];
+let horaFormateada = horaParte.substring(0,8);
 
 html+=`<tr>
 <td>${r[2]}</td>
@@ -220,6 +215,11 @@ html+=`<tr>
 <td><button onclick="verMapa(${r[6]},${r[7]})">Ver</button></td>
 </tr>`;
 });
+
+document.getElementById("tabla").innerHTML = html;
+});
+}
+
 function verMapa(lat,lng){
 if(!mapa){
 mapa=L.map('map').setView([lat,lng],15);
