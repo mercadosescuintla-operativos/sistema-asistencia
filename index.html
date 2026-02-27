@@ -39,7 +39,7 @@ body{
 </div>
 
 <!-- PANEL REGISTRADOR -->
-<div class="container mt-5" id="panelDiv" style="display:none;">
+<div id="panelDiv" class="container mt-5 d-none"">
   <div class="card shadow p-4">
     <h4 id="bienvenida" class="mb-3"></h4>
 
@@ -56,7 +56,7 @@ body{
 </div>
 
 <!-- PANEL ADMIN -->
-<div class="container mt-4" id="adminDiv" style="display:none;">
+<div id="adminDiv" class="container mt-4 d-none"">
 
   <div class="card shadow p-4 mb-4">
     <h4 class="mb-3">Panel Administrador</h4>
@@ -120,10 +120,13 @@ usuarioActual=data.usuario;
 document.getElementById("loginDiv").classList.add("d-none");
 
 if(usuarioActual.rol==="Administrador"){
+document.getElementById("loginDiv").classList.add("d-none");
+
+if(usuarioActual.rol==="Administrador"){
 document.getElementById("adminDiv").classList.remove("d-none");
 }else{
 document.getElementById("panelDiv").classList.remove("d-none");
-document.getElementById("bienvenida").innerText="Bienvenido "+usuarioActual.nombre;
+}
 }
 }else{
 alert("Credenciales incorrectas");
