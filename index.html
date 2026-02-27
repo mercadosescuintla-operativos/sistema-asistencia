@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema Asistencia</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -11,23 +12,33 @@
 body{
   font-family:Arial;
   background:#f1f5f9;
-  text-align:center;
+  margin:0;
+  padding:10px;
 }
+
 .container{
   background:white;
-  padding:30px;
-  margin:30px auto;
-  width:360px;
+  padding:20px;
+  margin:20px auto;
+  width:100%;
+  max-width:500px;
   border-radius:12px;
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
+
+h2{
+  margin-top:0;
+}
+
 input, select, button{
   width:100%;
-  padding:10px;
-  margin:6px 0;
-  border-radius:6px;
+  padding:12px;
+  margin:8px 0;
+  border-radius:8px;
   border:1px solid #ccc;
+  font-size:16px;
 }
+
 button{
   background:#2563eb;
   color:white;
@@ -35,26 +46,46 @@ button{
   cursor:pointer;
   font-weight:bold;
 }
+
 button:hover{
   background:#1d4ed8;
 }
+
 #map{
-  height:300px;
-  margin-top:20px;
+  height:250px;
+  margin-top:15px;
+  border-radius:10px;
 }
+
+/* TABLA RESPONSIVE */
+
+.table-wrapper{
+  overflow-x:auto;
+}
+
 table{
   width:100%;
-  margin-top:20px;
   border-collapse:collapse;
-  font-size:12px;
+  font-size:14px;
+  min-width:600px;
 }
+
 td,th{
   border:1px solid #ddd;
-  padding:6px;
+  padding:8px;
+  text-align:center;
 }
+
 th{
   background:#2563eb;
   color:white;
+}
+
+/* Ajustes móviles */
+@media (max-width:600px){
+  table{
+    font-size:12px;
+  }
 }
 </style>
 </head>
@@ -96,7 +127,9 @@ th{
 </select>
 <button onclick="crearUsuario()">Crear Usuario</button>
 
-<table id="tabla"></table>
+<div class="table-wrapper">
+  <table id="tabla"></table>
+</div>
 
 <div id="map"></div>
 </div>
