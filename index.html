@@ -155,25 +155,20 @@ longitud:pos.coords.longitude
 }
 
 function cargarRegistros(){
+
 fetch(API,{
 method:"POST",
 body:JSON.stringify({action:"obtenerRegistros"})
 })
 .then(r=>r.json())
 .then(data=>{
+
 let html="<thead class='table-dark'><tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Mapa</th></tr></thead><tbody>";
 
 data.data.slice(1).forEach(r=>{
 
-let fechaISO = r[4];
-let horaISO = r[5];
-
-let fechaParte = fechaISO.split("T")[0];
-let partesFecha = fechaParte.split("-");
-let fechaFormateada = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
-
-let horaParte = horaISO.split("T")[1];
-let horaFormateada = horaParte.substring(0,8);
+let fechaFormateada = r[4]; // ya viene lista
+let horaFormateada  = r[5]; // ya viene lista
 
 html+=`<tr>
 <td>${r[2]}</td>
@@ -185,7 +180,9 @@ html+=`<tr>
 });
 
 html+="</tbody>";
+
 document.getElementById("tabla").innerHTML = html;
+
 });
 }
 
