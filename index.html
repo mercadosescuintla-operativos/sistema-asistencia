@@ -102,14 +102,20 @@ fetch(API,{
 method:"POST",
 body:JSON.stringify({
 action:"login",
-correo:correo.value,
-password:password.value
+correo:document.getElementById("correo").value,
+password:document.getElementById("password").value
 })
 })
-.then(r=>r.json())
+.then(r=>{
+console.log("Respuesta cruda:", r);
+return r.json();
+})
 .then(data=>{
+console.log("Data recibida:", data);
+
 if(data.success){
 usuarioActual=data.usuario;
+
 document.getElementById("loginDiv").style.display="none";
 
 if(usuarioActual.rol==="Administrador"){
@@ -121,6 +127,10 @@ document.getElementById("bienvenida").innerText="Bienvenido "+usuarioActual.nomb
 }else{
 alert("Credenciales incorrectas");
 }
+})
+.catch(err=>{
+console.error("Error:", err);
+alert("Error en conexión con el servidor");
 });
 }
 
