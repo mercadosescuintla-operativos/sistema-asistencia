@@ -165,7 +165,7 @@ body:JSON.stringify({action:"obtenerRegistros"})
 
 let html="<thead class='table-dark'><tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Mapa</th></tr></thead><tbody>";
 
-data.data.slice(1).forEach(r=>{
+data.data.forEach(r=>{
 
 html+=`<tr>
 <td>${r[2]}</td>
