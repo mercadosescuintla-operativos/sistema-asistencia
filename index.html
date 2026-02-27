@@ -3,36 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <title>Sistema Asistencia</title>
-<script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <style>
 body{
   font-family:Arial;
-  background:#f4f6f9;
+  background:#f1f5f9;
   text-align:center;
 }
 .container{
   background:white;
   padding:30px;
   margin:30px auto;
-  width:350px;
-  border-radius:10px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+  width:360px;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 input, select, button{
   width:100%;
   padding:10px;
-  margin:5px 0;
+  margin:6px 0;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
 button{
   background:#2563eb;
   color:white;
   border:none;
   cursor:pointer;
+  font-weight:bold;
 }
-button:hover{background:#1d4ed8;}
-#map{height:300px;margin-top:20px;}
-table{width:100%;margin-top:20px;border-collapse:collapse;}
-td,th{border:1px solid #ccc;padding:5px;}
+button:hover{
+  background:#1d4ed8;
+}
+#map{
+  height:300px;
+  margin-top:20px;
+}
+table{
+  width:100%;
+  margin-top:20px;
+  border-collapse:collapse;
+  font-size:12px;
+}
+td,th{
+  border:1px solid #ddd;
+  padding:6px;
+}
+th{
+  background:#2563eb;
+  color:white;
+}
 </style>
 </head>
 <body>
@@ -46,19 +69,23 @@ td,th{border:1px solid #ccc;padding:5px;}
 
 <div class="container" id="panelDiv" style="display:none;">
 <h2 id="bienvenida"></h2>
+
 <select id="tipoMarcaje">
 <option>Entrada</option>
 <option>Inicio Almuerzo</option>
 <option>Fin Almuerzo</option>
 <option>Salida</option>
 </select>
+
 <button onclick="marcar()">Registrar</button>
 <button onclick="cerrarSesion()">Cerrar Sesión</button>
 </div>
 
 <div class="container" id="adminDiv" style="display:none;">
 <h2>Panel Administrador</h2>
+
 <button onclick="cargarRegistros()">Ver Registros</button>
+
 <h3>Crear Usuario</h3>
 <input id="nuevoNombre" placeholder="Nombre">
 <input id="nuevoCorreo" placeholder="Correo">
@@ -67,14 +94,15 @@ td,th{border:1px solid #ccc;padding:5px;}
 <option>Registrador</option>
 <option>Administrador</option>
 </select>
-<button onclick="crearUsuario()">Crear</button>
+<button onclick="crearUsuario()">Crear Usuario</button>
 
 <table id="tabla"></table>
+
 <div id="map"></div>
 </div>
 
 <script>
-const API="PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+const API="https://script.google.com/macros/s/AKfycbxWZVq4Qaq0RjlN8yEgt0XYx_F6C-3aX24W-s0zfy3CWUpBbrj_p5wugpalYcHWsNKKZg/exec";
 
 let usuarioActual=null;
 let mapa;
@@ -94,13 +122,16 @@ password:password.value
 if(data.success){
 usuarioActual=data.usuario;
 loginDiv.style.display="none";
+
 if(usuarioActual.rol==="Administrador"){
 adminDiv.style.display="block";
 }else{
 panelDiv.style.display="block";
 bienvenida.innerText="Bienvenido "+usuarioActual.nombre;
 }
-}else alert("Credenciales incorrectas");
+}else{
+alert("Credenciales incorrectas");
+}
 });
 }
 
@@ -129,30 +160,34 @@ body:JSON.stringify({action:"obtenerRegistros"})
 })
 .then(r=>r.json())
 .then(data=>{
-let html="<tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Ver</th></tr>";
+let html="<tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Hora</th><th>Mapa</th></tr>";
+
 data.data.slice(1).forEach(r=>{
 html+=`<tr>
 <td>${r[2]}</td>
 <td>${r[3]}</td>
 <td>${r[4]}</td>
 <td>${r[5]}</td>
-<td><button onclick="verMapa(${r[6]},${r[7]})">Mapa</button></td>
+<td><button onclick="verMapa(${r[6]},${r[7]})">Ver</button></td>
 </tr>`;
 });
+
 tabla.innerHTML=html;
 });
 }
 
 function verMapa(lat,lng){
 if(!mapa){
-mapa=new google.maps.Map(document.getElementById("map"),{
-zoom:15,
-center:{lat:lat,lng:lng}
-});
-marker=new google.maps.Marker({position:{lat:lat,lng:lng},map:mapa});
+mapa=L.map('map').setView([lat,lng],15);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+attribution:'© OpenStreetMap'
+}).addTo(mapa);
+
+marker=L.marker([lat,lng]).addTo(mapa);
 }else{
-mapa.setCenter({lat:lat,lng:lng});
-marker.setPosition({lat:lat,lng:lng});
+mapa.setView([lat,lng],15);
+marker.setLatLng([lat,lng]);
 }
 }
 
